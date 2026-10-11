@@ -494,7 +494,7 @@ page_donnees_server <- function(id, donnees) {
       ) +
         
         geom_col(
-          fill = "steelblue",
+          fill = "#B34CF3",
           width = 0.70
         ) +
         
@@ -523,39 +523,50 @@ page_donnees_server <- function(id, donnees) {
     output$resume_professions <- renderPlotly({
       
       profession <- donnees[["Profession"]]
-      
       req(!is.null(profession))
       
       effectifs <- compter_modalites(profession) |>
         arrange(Effectif)
       
+      palette_professions <- c(
+        "#ceab07", "#d3b343", "#d8bc65", "#dcc47e",
+        "#e0cd8f", "#e7d693", "#f3df6c", "#32382a",
+        "#43483a", "#565848", "#6d6954", "#8b7859",
+        "#c27d38"
+      )
+      
+      effectifs$Modalite <- factor(
+        effectifs$Modalite,
+        levels = effectifs$Modalite
+      )
+      
       graphique <- ggplot(
         effectifs,
         aes(
           x = Effectif,
-          y = reorder(Modalite, Effectif),
+          y = Modalite,
+          fill = Modalite,
           text = paste0(
             "Profession : ", Modalite,
             "<br>Effectif : ", Effectif
           )
         )
       ) +
-        
-        geom_col(
-          fill = "steelblue",
-          width = 0.70
+        geom_col(width = 0.70) +
+        scale_fill_manual(
+          values = setNames(
+            rep(palette_professions, length.out = nrow(effectifs)),
+            levels(effectifs$Modalite)
+          )
         ) +
-        
         labs(
           x = "Nombre d'individus",
           y = NULL
         ) +
-        
         theme_graphique() +
-        
         ggplot2::theme(
+          legend.position = "none",
           axis.text.y = ggplot2::element_text(size = 12),
-          
           axis.title.x = ggplot2::element_text(
             margin = ggplot2::margin(t = 15)
           )
@@ -565,19 +576,23 @@ page_donnees_server <- function(id, donnees) {
     })
     
     
+    
     # ------------------------------------------------------
     # LISTE DES VARIABLES
     # ------------------------------------------------------
     
     observe({
-      
-      updateSelectInput(
-        session = session,
-        inputId = "var",
-        choices = names(donnees),
-        selected = "Niveau d'anxiété"
+      variables_disponibles <- setdiff(
+        names(donnees),
+        "Profession"
       )
       
+      updateSelectInput(
+        session,
+        inputId = "var",
+        choices = variables_disponibles,
+        selected = "Niveau d'anxiété"
+      )
     })
     
     
@@ -585,23 +600,34 @@ page_donnees_server <- function(id, donnees) {
     # GRAPHIQUE DE DISTRIBUTION
     # ------------------------------------------------------
     
+    
     output$distribution <- renderPlotly({
       
       req(input$var)
       
-      x <- donnees[[input$var]]
-      
       nom_variable <- input$var
+      x <- donnees[[nom_variable]]
       
+      # Unités à afficher sur les axes
+      unites_variables <- c(
+        "Âge" = "ans",
+        "Activité physique" = "heures par semaine",
+        "Caféine consommée" = "mg par jour",
+        "Consommation d'alcool" = "verres par semaine",
+        "Fréquence cardiaque" = "battements par minute",
+        "Fréquence respiratoire" = "inspirations par minute",
+        "Séances de thérapie" = "par mois"
+      )
       
-      # ----------------------------------------------------
-      # VARIABLES QUANTITATIVES ORDINALES
-      #
-      # Les scores entiers de stress et d'anxiété sont
-      # représentés par des barres distinctes.
-      # Cela évite de coller les barres de l'histogramme.
-      # ----------------------------------------------------
+      unite <- unites_variables[nom_variable]
       
+      axe_x <- if (!is.na(unite) && length(unite) > 0) {
+        paste0(nom_variable, " (", unite, ")")
+      } else {
+        nom_variable
+      }
+      
+      # Variables ordinales : une barre par niveau
       variables_ordinales <- c(
         "Niveau de stress",
         "Niveau d'anxiété",
@@ -609,36 +635,40 @@ page_donnees_server <- function(id, donnees) {
         "Qualité de l'alimentation"
       )
       
+      # Variables numériques discrètes : une barre par valeur observée
+      variables_discretes <- c(
+        "Consommation d'alcool",
+        "Fréquence respiratoire",
+        "Séances de thérapie"
+      )
+      
       if (
         is.numeric(x) &&
-        nom_variable %in% variables_ordinales
+        nom_variable %in% c(variables_ordinales, variables_discretes)
       ) {
         
         valeurs <- x[!is.na(x)]
-        
         req(length(valeurs) > 0)
         
         effectifs <- as.data.frame(
-          table(valeurs),
+          table(Modalite = valeurs),
           stringsAsFactors = FALSE
         )
         
-        names(effectifs) <- c(
-          "Modalite",
-          "Effectif"
-        )
-        
-        effectifs$Modalite <- as.numeric(
-          as.character(effectifs$Modalite)
-        )
-        
+        names(effectifs) <- c("Modalite", "Effectif")
+        effectifs$Modalite <- as.numeric(as.character(effectifs$Modalite))
         effectifs <- effectifs |>
-          arrange(Modalite)
+          dplyr::arrange(Modalite)
         
-        graphique <- ggplot(
+        effectifs$Modalite_facteur <- factor(
+          effectifs$Modalite,
+          levels = effectifs$Modalite
+        )
+        
+        graphique <- ggplot2::ggplot(
           effectifs,
-          aes(
-            x = factor(Modalite),
+          ggplot2::aes(
+            x = Modalite_facteur,
             y = Effectif,
             text = paste0(
               nom_variable, " : ", Modalite,
@@ -646,81 +676,206 @@ page_donnees_server <- function(id, donnees) {
             )
           )
         ) +
-          
-          geom_col(
-            fill = "steelblue",
+          ggplot2::geom_col(
+            fill = "#B34CF3",
             width = 0.70
           ) +
-          
-          labs(
-            title = paste(
-              "Répartition de", nom_variable
-            ),
-            x = nom_variable,
+          ggplot2::labs(
+            title = paste("Répartition de", nom_variable),
+            x = axe_x,
             y = "Effectif"
           ) +
-          
           theme_graphique()
         
-        
-        # ----------------------------------------------------
-        # AUTRES VARIABLES QUANTITATIVES
-        # ----------------------------------------------------
         
       } else if (is.numeric(x)) {
         
         valeurs <- x[!is.na(x)]
-        
         req(length(valeurs) > 0)
         
-        graphique <- ggplot(
-          data.frame(Valeur = valeurs),
-          aes(
-            x = Valeur,
-            text = after_stat(
-              paste0(
-                "Intervalle : ",
-                round(xmin, 2),
-                " à ",
-                round(xmax, 2),
-                "<br>Effectif : ",
-                count
-              )
+        # Définir les regroupements selon la variable
+        if (nom_variable == "Âge") {
+          
+          bornes <- seq(18, 66, by = 2)
+          etiquettes <- as.character(head(bornes, -1))
+          
+          groupes <- cut(
+            valeurs,
+            breaks = bornes,
+            labels = etiquettes,
+            right = FALSE,
+            include.lowest = TRUE
+          )
+          
+          libelles_infobulle <- paste0(
+            head(bornes, -1), "–",
+            tail(bornes, -1) - 1
+          )
+          
+          titre_infobulle <- "Tranche d'âge"
+          
+        } else if (nom_variable == "Fréquence cardiaque") {
+          
+          bornes <- seq(60, 120, by = 2)
+          etiquettes <- as.character(head(bornes, -1))
+          
+          groupes <- cut(
+            valeurs,
+            breaks = bornes,
+            labels = etiquettes,
+            right = FALSE,
+            include.lowest = TRUE
+          )
+          
+          libelles_infobulle <- paste0(
+            head(bornes, -1), "–",
+            tail(bornes, -1) - 1
+          )
+          
+          titre_infobulle <- "Fréquence cardiaque"
+          
+        } else if (nom_variable %in% c(
+          "Heures de sommeil",
+          "Activité physique"
+        )) {
+          
+          # Regroupement à l'entier le plus proche
+          valeurs_arrondies <- round(valeurs)
+          
+          niveaux_ordonnes <- sort(unique(valeurs_arrondies))
+          
+          groupes <- factor(
+            valeurs_arrondies,
+            levels = niveaux_ordonnes,
+            ordered = TRUE
+          )
+          
+          titre_infobulle <- nom_variable
+          
+        } else if (nom_variable == "Caféine consommée") {
+          
+          # 30 intervalles de largeur 20 mg/jour
+          bornes <- seq(0, 600, by = 20)
+          
+          etiquettes <- as.character(head(bornes, -1))
+          
+          groupes <- cut(
+            valeurs,
+            breaks = bornes,
+            labels = etiquettes,
+            right = FALSE,
+            include.lowest = TRUE
+          )
+          
+          libelles_infobulle <- paste0(
+            head(bornes, -1), "–",
+            tail(bornes, -1) - 1
+          )
+          
+          titre_infobulle <- "Caféine consommée"
+          
+        } else {
+          
+          # Pour les autres variables quantitatives,
+          # une barre par valeur observée
+          groupes <- factor(
+            valeurs,
+            levels = sort(unique(valeurs))
+          )
+          
+          titre_infobulle <- nom_variable
+        }
+        
+        
+        # Calcul des effectifs par groupe
+        effectifs <- as.data.frame(
+          table(groupes, useNA = "no"),
+          stringsAsFactors = FALSE
+        )
+        
+        names(effectifs) <- c("Groupe", "Effectif")
+        
+        effectifs <- effectifs |>
+          dplyr::filter(Effectif > 0)
+        
+        
+        # Rétablir l'ordre numérique des catégories
+        if (nom_variable %in% c(
+          "Heures de sommeil",
+          "Activité physique",
+          "Âge",
+          "Fréquence cardiaque",
+          "Caféine consommée"
+        )) {
+          
+          if (nom_variable %in% c(
+            "Heures de sommeil",
+            "Activité physique"
+          )) {
+            ordre_numerique <- sort(unique(round(valeurs)))
+          } else if (nom_variable == "Âge") {
+            ordre_numerique <- seq(18, 64, by = 2)
+          } else if (nom_variable == "Fréquence cardiaque") {
+            ordre_numerique <- seq(60, 118, by = 2)
+          } else if (nom_variable == "Caféine consommée") {
+            ordre_numerique <- seq(0, 580, by = 20)
+          }
+          
+          effectifs$Groupe <- factor(
+            effectifs$Groupe,
+            levels = as.character(ordre_numerique),
+            ordered = TRUE
+          )
+          
+          effectifs <- effectifs |>
+            dplyr::arrange(effectifs$Groupe)
+        }
+        
+        
+        graphique <- ggplot2::ggplot(
+          effectifs,
+          ggplot2::aes(
+            x = Groupe,
+            y = Effectif,
+            text = paste0(
+              titre_infobulle, " : ", Groupe,
+              if (!is.na(unite) && length(unite) > 0) {
+                paste0(" ", unite)
+              } else {
+                ""
+              },
+              "<br>Effectif : ", Effectif
             )
           )
         ) +
-          
-          geom_histogram(
-            aes(y = after_stat(count)),
-            bins = 30,
-            fill = "steelblue",
-            colour = "white",
-            closed = "right"
+          ggplot2::geom_col(
+            fill = "#B34CF3",
+            width = 0.80
           ) +
-          
-          labs(
-            title = paste(
-              "Distribution de", nom_variable
-            ),
-            x = nom_variable,
+          ggplot2::labs(
+            title = paste("Répartition de", nom_variable),
+            x = axe_x,
             y = "Effectif"
           ) +
-          
-          theme_graphique()
+          theme_graphique() +
+          ggplot2::theme(
+            axis.text.x = ggplot2::element_text(
+              angle = 45,
+              hjust = 1
+            )
+          )
         
         
-        # ----------------------------------------------------
-        # VARIABLES QUALITATIVES
-        # ----------------------------------------------------
         
       } else {
         
+        # Variables qualitatives : diagramme en barres
         effectifs <- compter_modalites(x) |>
-          arrange(Effectif)
+          dplyr::arrange(Effectif)
         
-        graphique <- ggplot(
+        graphique <- ggplot2::ggplot(
           effectifs,
-          aes(
+          ggplot2::aes(
             x = Effectif,
             y = reorder(Modalite, Effectif),
             text = paste0(
@@ -729,31 +884,22 @@ page_donnees_server <- function(id, donnees) {
             )
           )
         ) +
-          
-          geom_col(
-            fill = "steelblue",
+          ggplot2::geom_col(
+            fill = "#B34CF3",
             width = 0.70
           ) +
-          
-          labs(
-            title = paste(
-              "Répartition de", nom_variable
-            ),
+          ggplot2::labs(
+            title = paste("Répartition de", nom_variable),
             x = "Effectif",
             y = nom_variable
           ) +
-          
           theme_graphique() +
-          
-          theme(
-            axis.text.y = element_text(size = 12)
+          ggplot2::theme(
+            axis.text.y = ggplot2::element_text(size = 12)
           )
       }
       
-      
-      # Affichage interactif avec infobulles
       rendre_interactif(graphique)
-      
     })
     
     
@@ -765,10 +911,12 @@ page_donnees_server <- function(id, donnees) {
       
       description_variables
       
-    }, options = list(
+    },rownames = FALSE,
+    options = list(
       scrollX = TRUE,
       pageLength = 19,
-      autoWidth = TRUE
+      autoWidth = TRUE,
+      lengthChange = FALSE
     ))
     
   })
