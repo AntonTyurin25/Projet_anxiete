@@ -4,6 +4,20 @@ page_structure_ui <- function(id) {
   ns <- NS(id)
   
   tagList(
+  tags$style(HTML("
+  .structure-section-title {
+    font-size: 21px;
+    font-weight: 700;
+    margin-top: 18px;
+    margin-bottom: 12px;
+    color: #26364a;
+  }
+
+  .structure-page-intro {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+")),
     
     h2(
       "Exploration de la structure des données",
@@ -43,7 +57,8 @@ page_structure_ui <- function(id) {
           column(
             width = 6,
             
-            h4("Corrélations entre variables quantitatives"),
+            h4("Corrélations entre variables quantitatives",
+               class = "structure-section-title"),
             
             plotOutput(
               ns("correlation"),
@@ -61,13 +76,16 @@ page_structure_ui <- function(id) {
           column(
             width = 6,
             
-            h4("Niveau d'anxiété selon la profession"),
+            h4("Niveau d'anxiété selon la profession",
+               class = "structure-section-title"),
             plotOutput(
               ns("boxplot_profession"),
               height = "600px"
             ),
             p(
-              "La distribution du niveau d’anxiété selon la profession révèle une structure étonnamment régulière : les boîtes à moustaches présentent seulement deux types de médianes (3 et 4) et deux configurations de quartiles, malgré la diversité des catégories professionnelles. Ces profils se répètent d’une profession à l’autre, sans faire apparaître de différences nettes entre les distributions. Cette régularité, particulièrement visible sur ce graphique, a constitué un indice majeur nous conduisant à réorienter notre sujet : plutôt que de nous limiter à l’étude des liens entre profession et anxiété, nous avons choisi d’explorer plus largement la structure des données, afin de déterminer si cette répétition des profils reflète une organisation sous-jacente."
+              "Les distributions présentent des médianes et des quartiles très similaires ",
+              "entre les professions. Cette régularité nous a conduits à explorer plus ",
+              "largement la structure des données."
             )
             
             
@@ -98,7 +116,8 @@ page_structure_ui <- function(id) {
           column(
             width = 12,
             
-            h4("Évolution des variables quantitatives"),
+            h4("Évolution des variables quantitatives",
+               class = "structure-section-title"),
             
             p(
               "Les variables ont été standardisées afin de pouvoir comparer ",
@@ -120,7 +139,8 @@ page_structure_ui <- function(id) {
           column(
             width = 6,
             
-            h4("Ruptures entre niveaux d'anxiété"),
+            h4("Ruptures entre niveaux d'anxiété",
+               class = "structure-section-title"),
             
             p(
               "Ce graphique représente l'amplitude du changement entre deux ",
@@ -137,7 +157,8 @@ page_structure_ui <- function(id) {
           column(
             width = 6,
             
-            h4("Variation des variables qualitatives"),
+            h4("Variation des variables qualitatives",
+               class = "structure-section-title"),
             
             p(
               "Pour chaque variable qualitative, on mesure la variation de la ",
@@ -183,7 +204,8 @@ page_structure_ui <- function(id) {
           column(
             width = 6,
             
-            h4("Comparaison des deux profils (variables quantitatives)"),
+            h4("Comparaison des deux profils (variables quantitatives)",
+               class = "structure-section-title"),
             
             p(
               "Les variables sont standardisées afin de comparer leur position ",
@@ -200,7 +222,8 @@ page_structure_ui <- function(id) {
           column(
             width = 6,
             
-            h4("Comparaison des deux profils (variables qualitatives)"),
+            h4("Comparaison des deux profils (variables qualitatives)",
+               class = "structure-section-title"),
             
             p(
               "Les proportions de chaque catégorie sont comparées entre les deux ",
@@ -238,7 +261,8 @@ page_structure_ui <- function(id) {
           column(
             width = 6,
             
-            h4("Variance expliquée par les axes"),
+            h4("Variance expliquée par les axes",
+               class = "structure-section-title"),
             
             p(
               "La première dimension explique environ 19,5 % de la variance. ",
@@ -257,7 +281,8 @@ page_structure_ui <- function(id) {
           column(
             width = 6,
             
-            h4("Contribution des variables aux axes"),
+            h4("Contribution des variables aux axes",
+               class = "structure-section-title"),
             
             p(
               "Ce graphique permet d'identifier les variables qui contribuent ",
@@ -276,7 +301,8 @@ page_structure_ui <- function(id) {
           column(
             width = 12,
             
-            h4("Position des individus dans l'espace de l'ACP"),
+            h4("Position des individus dans l'espace de l'ACP",
+               class = "structure-section-title"),
             
             p(
               "La coloration selon le groupe d'anxiété permet d'observer si ",
@@ -454,7 +480,6 @@ page_structure_server <- function(id, donnees) {
         ) +
         ggplot2::labs(
           title = "Corrélations entre variables quantitatives",
-          subtitle = "Triangle inférieur uniquement ; l'anxiété est encadrée en rouge",
           x = NULL,
           y = NULL,
           fill = "Corrélation"
@@ -503,7 +528,7 @@ page_structure_server <- function(id, donnees) {
           y = "Niveau d'anxiété"
         ) +
         
-        ggplot2::theme_minimal(base_size = 12) +
+        ggplot2::theme_minimal(base_size = 14) +   ggplot2::theme(     plot.title = ggplot2::element_text(       size = 17,       face = "bold"     ),     plot.subtitle = ggplot2::element_text(       size = 13     ),     axis.title = ggplot2::element_text(       size = 14,       face = "bold"     ),     axis.text = ggplot2::element_text(       size = 12,       color = "grey20"     ),     legend.title = ggplot2::element_text(       size = 13,       face = "bold"     ),     legend.text = ggplot2::element_text(       size = 12     )   ) +
         
         ggplot2::theme(
           axis.text.x = ggplot2::element_text(
@@ -587,13 +612,29 @@ page_structure_server <- function(id, donnees) {
           y = "Moyenne standardisée",
           color = "Variable"
         ) +
-        ggplot2::theme_minimal(base_size = 12)
+        ggplot2::theme_minimal(base_size = 14) +   ggplot2::theme(     plot.title = ggplot2::element_text(       size = 17,       face = "bold"     ),     plot.subtitle = ggplot2::element_text(       size = 13     ),     axis.title = ggplot2::element_text(       size = 14,       face = "bold"     ),     axis.text = ggplot2::element_text(       size = 12,       color = "grey20"     ),     legend.title = ggplot2::element_text(       size = 13,       face = "bold"     ),     legend.text = ggplot2::element_text(       size = 12     )   )
       
       plotly::ggplotly(
         p,
         tooltip = "text"
       ) |>
-        plotly::event_register("plotly_legendclick")
+        plotly::layout(
+          font = list(size = 14),
+          title = list(font = list(size = 18)),
+          xaxis = list(
+            title = list(font = list(size = 14)),
+            tickfont = list(size = 12)
+          ),
+          yaxis = list(
+            title = list(font = list(size = 14)),
+            tickfont = list(size = 12)
+          ),
+          legend = list(
+            font = list(size = 12),
+            title = list(font = list(size = 13))
+          )
+        ) |>
+        plotly::event_register("plotly_legendclick") 
     })
     
     # ============================================================
@@ -919,47 +960,126 @@ page_structure_server <- function(id, donnees) {
         
         donnees_groupes |>
           dplyr::filter(!is.na(.data[[variable]])) |>
+          dplyr::transmute(
+            Groupe_anxiete,
+            Categorie = as.character(.data[[variable]])
+          ) |>
           dplyr::count(
             Groupe_anxiete,
-            Categorie = .data[[variable]],
+            Categorie,
             name = "n"
           ) |>
-          dplyr::group_by(Groupe_anxiete) |>
-          dplyr::mutate(Proportion = n / sum(n)) |>
-          dplyr::ungroup() |>
           tidyr::complete(
             Groupe_anxiete,
             Categorie,
-            fill = list(n = 0, Proportion = 0)
+            fill = list(n = 0)
           ) |>
-          dplyr::select(
-            Groupe_anxiete,
-            Categorie,
-            Proportion
-          ) |>
-          tidyr::pivot_wider(
-            names_from = Groupe_anxiete,
-            values_from = Proportion,
-            values_fill = 0
-          ) |>
+          dplyr::group_by(Groupe_anxiete) |>
           dplyr::mutate(
-            Difference = `Anxiété 8–10` - `Anxiété 1–7`,
+            Proportion = n / sum(n)
+          ) |>
+          dplyr::ungroup() |>
+          dplyr::mutate(
             Variable = variable
-          ) |>
-          dplyr::group_by(Variable) |>
-          dplyr::slice_max(
-            order_by = abs(Difference),
-            n = 1,
-            with_ties = FALSE
-          ) |>
-          dplyr::ungroup()
+          )
       }
     )
     
+    # Ordonner les variables pour conserver un affichage stable
     profils_qualitatifs <- profils_qualitatifs |>
       dplyr::mutate(
-        Variable = reorder(Variable, Difference)
+        Variable = factor(
+          Variable,
+          levels = variables_qualitatives
+        ),
+        Groupe_anxiete = factor(
+          Groupe_anxiete,
+          levels = c("Anxiété 1–7", "Anxiété 8–10")
+        )
       )
+    profils_qualitatifs$Variable <- factor(
+      profils_qualitatifs$Variable,
+      levels = c(
+        "Sexe",
+        "Profession",
+        "Tabagisme",
+        "Antécédents familiaux d'anxiété",
+        "Vertiges",
+        "Médication",
+        "Événement de vie récent"
+      )
+    )
+    
+    # Comparaison des proportions de toutes les modalités
+    output$profil_complementaire <- renderPlot({
+      
+      ggplot2::ggplot(
+        profils_qualitatifs,
+        ggplot2::aes(
+          x = Proportion,
+          y = Categorie,
+          fill = Groupe_anxiete
+        )
+      ) +
+        ggplot2::geom_col(
+          position = ggplot2::position_dodge(width = 0.8),
+          width = 0.7
+        ) +
+        ggh4x::facet_manual(
+          ~ Variable,
+          design = "
+                    AB
+                    CB
+                    DE
+                    FG
+                    ",
+          scales = "free_y"
+        ) +
+        ggplot2::scale_x_continuous(
+          labels = scales::label_percent(accuracy = 1),
+          limits = c(0, 1),
+          breaks = seq(0, 1, by = 0.25),
+          expand = ggplot2::expansion(mult = c(0, 0.02))
+        ) +
+        ggplot2::scale_fill_manual(
+          values = c(
+            "Anxiété 1–7" = "#3B6FB6",
+            "Anxiété 8–10" = "#E45756"
+          )
+        ) +
+        ggplot2::labs(
+          title = "Répartition des modalités selon le profil d'anxiété",
+          subtitle = "Chaque variable est comparée séparément",
+          x = "Proportion des observations",
+          y = NULL,
+          fill = "Profil"
+        ) +
+        ggplot2::theme_minimal(base_size = 13) +
+        ggplot2::theme(
+          plot.title = ggplot2::element_text(
+            size = 17,
+            face = "bold"
+          ),
+          plot.subtitle = ggplot2::element_text(size = 12),
+          axis.title = ggplot2::element_text(size = 13),
+          axis.text = ggplot2::element_text(
+            size = 11,
+            color = "grey20"
+          ),
+          strip.text = ggplot2::element_text(
+            size = 12,
+            face = "bold"
+          ),
+          legend.position = "bottom",
+          legend.title = ggplot2::element_text(
+            size = 12,
+            face = "bold"
+          ),
+          legend.text = ggplot2::element_text(size = 11),
+          panel.grid.minor = ggplot2::element_blank()
+        )
+    })
+
     
     output$profils_anxiete <- renderPlot({
       
@@ -1007,61 +1127,14 @@ page_structure_server <- function(id, donnees) {
           y = NULL,
           color = NULL
         ) +
-        ggplot2::theme_minimal(base_size = 12) +
+        ggplot2::theme_minimal(base_size = 14) +   ggplot2::theme(     plot.title = ggplot2::element_text(       size = 17,       face = "bold"     ),     plot.subtitle = ggplot2::element_text(       size = 13     ),     axis.title = ggplot2::element_text(       size = 14,       face = "bold"     ),     axis.text = ggplot2::element_text(       size = 12,       color = "grey20"     ),     legend.title = ggplot2::element_text(       size = 13,       face = "bold"     ),     legend.text = ggplot2::element_text(       size = 12     )   ) +
         ggplot2::theme(
           legend.position = "bottom"
         )
     })
     
     
-    
-    output$profil_complementaire <- renderPlot({
-      
-      ggplot2::ggplot(
-        profils_qualitatifs,
-        ggplot2::aes(
-          x = Difference,
-          y = Variable,
-          color = Difference > 0
-        )
-      ) +
-        ggplot2::geom_vline(
-          xintercept = 0,
-          linetype = "dashed",
-          color = "grey60"
-        ) +
-        ggplot2::geom_segment(
-          ggplot2::aes(
-            x = 0,
-            xend = Difference,
-            yend = Variable
-          ),
-          color = "grey65",
-          linewidth = 1
-        ) +
-        ggplot2::geom_point(size = 3.5) +
-        ggplot2::scale_color_manual(
-          values = c(
-            "TRUE" = "#E45756",
-            "FALSE" = "#3B6FB6"
-          ),
-          labels = c(
-            "TRUE" = "Plus fréquent dans le groupe 8–10",
-            "FALSE" = "Moins fréquent dans le groupe 8–10"
-          )
-        ) +
-        ggplot2::labs(
-          title = "Différences de proportions entre les groupes",
-          subtitle = "Catégorie présentant l'écart de proportion maximal pour chaque variable",
-          x = "Proportion (8–10) − proportion (1–7)",
-          y = NULL,
-          color = NULL
-        ) +
-        ggplot2::theme_minimal(base_size = 12) +
-        ggplot2::theme(
-          legend.position = "bottom"
-        )
-    })
+  
     
     
     # ============================================================
@@ -1107,7 +1180,7 @@ page_structure_server <- function(id, donnees) {
           title = "Variance expliquée par les composantes"
         ) +
         
-        ggplot2::theme_minimal(base_size = 12)
+        ggplot2::theme_minimal(base_size = 14) +   ggplot2::theme(     plot.title = ggplot2::element_text(       size = 17,       face = "bold"     ),     plot.subtitle = ggplot2::element_text(       size = 13     ),     axis.title = ggplot2::element_text(       size = 14,       face = "bold"     ),     axis.text = ggplot2::element_text(       size = 12,       color = "grey20"     ),     legend.title = ggplot2::element_text(       size = 13,       face = "bold"     ),     legend.text = ggplot2::element_text(       size = 12     )   )
     })
     
     
@@ -1127,7 +1200,7 @@ page_structure_server <- function(id, donnees) {
           title = "Contribution des variables aux axes"
         ) +
         
-        ggplot2::theme_minimal(base_size = 12)
+        ggplot2::theme_minimal(base_size = 14) +   ggplot2::theme(     plot.title = ggplot2::element_text(       size = 17,       face = "bold"     ),     plot.subtitle = ggplot2::element_text(       size = 13     ),     axis.title = ggplot2::element_text(       size = 14,       face = "bold"     ),     axis.text = ggplot2::element_text(       size = 12,       color = "grey20"     ),     legend.title = ggplot2::element_text(       size = 13,       face = "bold"     ),     legend.text = ggplot2::element_text(       size = 12     )   )
     })
     
     
@@ -1167,7 +1240,7 @@ page_structure_server <- function(id, donnees) {
         color = "Groupe d'anxiété",
         fill = "Groupe d'anxiété"
       ) +
-      ggplot2::theme_minimal(base_size = 12)
+      ggplot2::theme_minimal(base_size = 14) +   ggplot2::theme(     plot.title = ggplot2::element_text(       size = 17,       face = "bold"     ),     plot.subtitle = ggplot2::element_text(       size = 13     ),     axis.title = ggplot2::element_text(       size = 14,       face = "bold"     ),     axis.text = ggplot2::element_text(       size = 12,       color = "grey20"     ),     legend.title = ggplot2::element_text(       size = 13,       face = "bold"     ),     legend.text = ggplot2::element_text(       size = 12     )   )
     })
     
   })
