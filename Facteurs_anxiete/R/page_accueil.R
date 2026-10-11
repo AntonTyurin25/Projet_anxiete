@@ -395,8 +395,8 @@ page_accueil_ui <- function(id) {
             span(class = "plan-titre", "Modélisation"),
             span(
               class = "plan-description",
-              "Présentation du modèle de régression, des variables utilisées et ",
-              "de leur interprétation. Cette partie permet également d'obtenir ",
+              "Présentation du modèle de régression et des variables utilisées. ",
+              "Cette partie permet également d'obtenir ",
               "une estimation du niveau d'anxiété selon le modèle."
             )
           ),
