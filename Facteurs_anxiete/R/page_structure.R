@@ -352,7 +352,27 @@ page_structure_ui <- function(id) {
 page_structure_server <- function(id, donnees) {
   
   moduleServer(id, function(input, output, session) {
+    # ============================================================
+    # PALETTE WES ANDERSON
+    # ============================================================
     
+    palette_wes <- c(
+      "#ceab07",
+      "#d3b343",
+      "#d8bc65",
+      "#dcc47e",
+      "#e0cd8f",
+      "#e7d693",
+      "#f3df6c",
+      "#32382a",
+      "#43483a",
+      "#565848",
+      "#6d6954",
+      "#8b7859",
+      "#c27d38"
+    )
+    
+    violet_acp <- "#B34CF3"
     
     # ============================================================
     # VARIABLES
@@ -506,36 +526,63 @@ page_structure_server <- function(id, donnees) {
     
     output$boxplot_profession <- renderPlot({
       
+      professions <- sort(unique(
+        as.character(stats::na.omit(donnees$Profession))
+      ))
+      
+      couleurs_professions <- stats::setNames(
+        rep(palette_wes, length.out = length(professions)),
+        professions
+      )
+      
       ggplot2::ggplot(
         donnees,
         ggplot2::aes(
           x = Profession,
-          y = `Niveau d'anxiété`
+          y = `Niveau d'anxiété`,
+          fill = Profession
         )
       ) +
-        
-        ggplot2::geom_boxplot(
-          outlier.alpha = 0.3
+        geom_boxplot(
+          aes(fill = Profession),
+          color = "#B34CF3",
+          outlier.shape = NA
         ) +
-        
+        ggplot2::scale_fill_manual(
+          values = couleurs_professions,
+          drop = FALSE
+        ) +
         ggplot2::scale_y_continuous(
           breaks = 1:10
         ) +
-        
         ggplot2::labs(
           title = "Distribution du niveau d'anxiété selon la profession",
           x = "Profession",
-          y = "Niveau d'anxiété"
+          y = "Niveau d'anxiété",
+          fill = "Profession"
         ) +
-        
-        ggplot2::theme_minimal(base_size = 14) +   ggplot2::theme(     plot.title = ggplot2::element_text(       size = 17,       face = "bold"     ),     plot.subtitle = ggplot2::element_text(       size = 13     ),     axis.title = ggplot2::element_text(       size = 14,       face = "bold"     ),     axis.text = ggplot2::element_text(       size = 12,       color = "grey20"     ),     legend.title = ggplot2::element_text(       size = 13,       face = "bold"     ),     legend.text = ggplot2::element_text(       size = 12     )   ) +
-        
+        ggplot2::theme_minimal(base_size = 14) +
         ggplot2::theme(
+          plot.title = ggplot2::element_text(
+            size = 17,
+            face = "bold"
+          ),
+          axis.title = ggplot2::element_text(
+            size = 14,
+            face = "bold"
+          ),
+          axis.text = ggplot2::element_text(
+            size = 12,
+            color = "grey20"
+          ),
           axis.text.x = ggplot2::element_text(
             angle = 45,
             hjust = 1
-          )
+          ),
+          legend.position = "none",
+          panel.grid.minor = ggplot2::element_blank()
         )
+      
     })
     
     
@@ -1173,14 +1220,67 @@ page_structure_server <- function(id, donnees) {
       factoextra::fviz_eig(
         acp,
         addlabels = TRUE,
-        ylim = c(0, 25)
+        ylim = c(0, 25),
+        barfill = violet_acp,
+        barcolor = violet_acp
       ) +
-        
         ggplot2::labs(
-          title = "Variance expliquée par les composantes"
+          title = "Variance expliquée par les composantes",
+          x = "Composantes principales",
+          y = "Pourcentage de variance expliquée"
         ) +
-        
-        ggplot2::theme_minimal(base_size = 14) +   ggplot2::theme(     plot.title = ggplot2::element_text(       size = 17,       face = "bold"     ),     plot.subtitle = ggplot2::element_text(       size = 13     ),     axis.title = ggplot2::element_text(       size = 14,       face = "bold"     ),     axis.text = ggplot2::element_text(       size = 12,       color = "grey20"     ),     legend.title = ggplot2::element_text(       size = 13,       face = "bold"     ),     legend.text = ggplot2::element_text(       size = 12     )   )
+        ggplot2::theme_minimal(base_size = 14) +
+        ggplot2::theme(
+          plot.title = ggplot2::element_text(
+            size = 17,
+            face = "bold"
+          ),
+          axis.title = ggplot2::element_text(
+            size = 14,
+            face = "bold"
+          ),
+          axis.text = ggplot2::element_text(
+            size = 12,
+            color = "grey20"
+          ),
+          panel.grid.minor = ggplot2::element_blank()
+        )
+      
+    })
+    
+    
+    # ============================================================
+    # 9. CONTRIBUTION DES VARIABLES
+    # ============================================================
+    
+    output$pca_variables <- renderPlot({
+      
+      factoextra::fviz_pca_var(
+        acp,
+        repel = TRUE
+      ) +
+        ggplot2::labs(
+          title = "Contribution des variables aux axes",
+          x = "Dimension 1",
+          y = "Dimension 2"
+        ) +
+        ggplot2::theme_minimal(base_size = 14) +
+        ggplot2::theme(
+          plot.title = ggplot2::element_text(
+            size = 17,
+            face = "bold"
+          ),
+          axis.title = ggplot2::element_text(
+            size = 14,
+            face = "bold"
+          ),
+          axis.text = ggplot2::element_text(
+            size = 12,
+            color = "grey20"
+          ),
+          panel.grid.minor = ggplot2::element_blank()
+        )
+      
     })
     
     
