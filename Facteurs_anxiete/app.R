@@ -59,7 +59,7 @@ source("R/page_donnees.R")
 source("R/page_structure.R")
 source("R/page_modele.R")
 
-ui <- dashboardPage(
+ui <- dashboardPage( skin = "purple",
   
   # --------------------------------------------------
   # HEADER
