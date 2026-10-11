@@ -120,7 +120,7 @@ ui <- dashboardPage(
   
   dashboardSidebar(
     collapsed = F,
-    sidebarMenu(
+    sidebarMenu(id = "tabs",
       
       menuItem(
         "Accueil",
@@ -143,7 +143,7 @@ ui <- dashboardPage(
       menuItem(
         "Modélisation",
         tabName = "modele",
-        icon = icon("chart-line")
+        icon = icon("calculator")
       )
       
     )
@@ -193,7 +193,19 @@ ui <- dashboardPage(
 
 server <- function(input, output, session) {
   
-  page_accueil_server("accueil")
+  navigation_accueil <- page_accueil_server("accueil")
+  
+  observeEvent(navigation_accueil(), {
+    
+    destination <- navigation_accueil()$destination
+    
+    updateTabItems(
+      session = session,
+      inputId = "tabs",
+      selected = destination
+    )
+    
+  }, ignoreInit = TRUE)
   
   page_donnees_server(
     "donnees",

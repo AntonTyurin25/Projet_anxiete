@@ -1,5 +1,6 @@
+
 page_accueil_ui <- function(id) {
-  #
+  
   ns <- NS(id)
   
   tagList(
@@ -10,15 +11,12 @@ page_accueil_ui <- function(id) {
     
     tags$head(
       tags$style(HTML("
-      
-        /* Conteneur général */
         .accueil {
           max-width: 1150px;
           margin: 0 auto;
           padding: 10px 25px 40px 25px;
         }
-        
-        /* Titre principal */
+
         .accueil-titre {
           text-align: center;
           margin-top: 10px;
@@ -27,20 +25,19 @@ page_accueil_ui <- function(id) {
           font-weight: 700;
           color: #2c3e50;
         }
-        
+
         .accueil-sous-titre {
           text-align: center;
           font-size: 17px;
           color: #6c757d;
           margin-bottom: 35px;
         }
-        
-        /* Sections */
+
         .accueil-section {
           margin-top: 30px;
           margin-bottom: 25px;
         }
-        
+
         .accueil-section h2 {
           color: #2c3e50;
           font-size: 24px;
@@ -49,15 +46,14 @@ page_accueil_ui <- function(id) {
           padding-bottom: 7px;
           border-bottom: 2px solid #3c8dbc;
         }
-        
+
         .accueil-section p {
           font-size: 15px;
           line-height: 1.65;
           color: #444444;
           text-align: justify;
         }
-        
-        /* Encadré de problématique */
+
         .problematique {
           background-color: #f5f8fa;
           border-left: 5px solid #3c8dbc;
@@ -67,12 +63,11 @@ page_accueil_ui <- function(id) {
           font-size: 16px;
           line-height: 1.6;
         }
-        
+
         .problematique strong {
           color: #2c3e50;
         }
-        
-        /* Les deux profils */
+
         .profil-box {
           padding: 18px;
           margin-top: 10px;
@@ -81,25 +76,26 @@ page_accueil_ui <- function(id) {
           border: 1px solid #e5e5e5;
           min-height: 120px;
         }
-        
+
         .profil-box h4 {
           margin-top: 0;
           font-weight: 600;
           color: #2c3e50;
         }
-        
+
         .profil-box p {
           text-align: left;
           margin-bottom: 0;
         }
-        
-        /* Plan */
+
         .plan-container {
           margin-top: 25px;
         }
-        
+
         .plan-card {
           display: block;
+          width: 100%;
+          text-align: left;
           text-decoration: none !important;
           color: inherit !important;
           background-color: white;
@@ -110,14 +106,17 @@ page_accueil_ui <- function(id) {
           min-height: 135px;
           transition: all 0.2s ease;
           box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+          cursor: pointer;
         }
-        
-        .plan-card:hover {
+
+        .plan-card:hover,
+        .plan-card:focus {
           border-color: #3c8dbc;
           box-shadow: 0 4px 12px rgba(0,0,0,0.12);
           transform: translateY(-2px);
+          outline: none;
         }
-        
+
         .plan-numero {
           display: inline-block;
           width: 32px;
@@ -129,14 +128,15 @@ page_accueil_ui <- function(id) {
           color: white;
           font-weight: bold;
           margin-right: 10px;
+          text-align: center;
         }
-        
+
         .plan-titre {
           font-size: 18px;
           font-weight: 600;
           color: #2c3e50;
         }
-        
+
         .plan-description {
           display: block;
           margin-top: 12px;
@@ -145,8 +145,7 @@ page_accueil_ui <- function(id) {
           font-size: 14px;
           line-height: 1.5;
         }
-        
-        /* Avertissement */
+
         .avertissement {
           margin-top: 25px;
           padding: 15px 18px;
@@ -157,10 +156,8 @@ page_accueil_ui <- function(id) {
           color: #666666;
           line-height: 1.5;
         }
-        
       "))
     ),
-    
     
     # ============================================================
     # CONTENU
@@ -168,10 +165,6 @@ page_accueil_ui <- function(id) {
     
     div(
       class = "accueil",
-      
-      # ----------------------------------------------------------
-      # Titre
-      # ----------------------------------------------------------
       
       h1(
         class = "accueil-titre",
@@ -183,9 +176,8 @@ page_accueil_ui <- function(id) {
         "Exploration, analyse et modélisation d'un jeu de données"
       ),
       
-      
       # ----------------------------------------------------------
-      # Introduction
+      # Présentation du projet
       # ----------------------------------------------------------
       
       div(
@@ -217,9 +209,8 @@ page_accueil_ui <- function(id) {
         )
       ),
       
-      
       # ----------------------------------------------------------
-      # Découverte de la structure des données
+      # Découverte de la structure
       # ----------------------------------------------------------
       
       div(
@@ -243,9 +234,7 @@ page_accueil_ui <- function(id) {
         div(
           class = "problematique",
           
-          tags$strong(
-            "Nouvelle problématique : "
-          ),
+          tags$strong("Nouvelle problématique : "),
           
           "comment les données sont-elles structurées et quels éléments ",
           "permettent d'expliquer les profils observés ?"
@@ -259,7 +248,6 @@ page_accueil_ui <- function(id) {
           "avec certitude leur méthode de génération."
         )
       ),
-      
       
       # ----------------------------------------------------------
       # Deux profils
@@ -312,6 +300,7 @@ page_accueil_ui <- function(id) {
         
         p(
           style = "margin-top: 20px;",
+          
           "Nous avons donc étudié ces deux groupes afin de déterminer quelles ",
           "caractéristiques les différencient et dans quelle mesure les variables ",
           "comportementales, physiologiques et sociodémographiques sont associées ",
@@ -319,9 +308,8 @@ page_accueil_ui <- function(id) {
         )
       ),
       
-      
       # ----------------------------------------------------------
-      # Retour à la problématique initiale
+      # Modélisation
       # ----------------------------------------------------------
       
       div(
@@ -351,7 +339,6 @@ page_accueil_ui <- function(id) {
         )
       ),
       
-      
       # ----------------------------------------------------------
       # PLAN DE L'APPLICATION
       # ----------------------------------------------------------
@@ -366,81 +353,56 @@ page_accueil_ui <- function(id) {
           "dans l'ordre ou accéder directement à la partie qui vous intéresse."
         ),
         
+        # Carte 1 : Données
         
-        # ---- Carte 1 : Données ----
-        
-        tags$a(
-          class = "plan-card",
-          href = "#shiny-tab-donnees",
-          
-          span(
-            class = "plan-numero",
-            "1"
+        actionButton(
+          inputId = ns("aller_donnees"),
+          label = tagList(
+            span(class = "plan-numero", "1"),
+            span(class = "plan-titre", "Données"),
+            span(
+              class = "plan-description",
+              "Présentation du jeu de données, de ses variables et de leurs ",
+              "distributions. Cette partie permet d'explorer les observations ",
+              "et leurs principales caractéristiques."
+            )
           ),
-          
-          span(
-            class = "plan-titre",
-            "Données"
-          ),
-          
-          span(
-            class = "plan-description",
-            "Présentation du jeu de données, de ses variables et de leurs ",
-            "distributions. Cette partie permet d'explorer les observations ",
-            "et leurs principales caractéristiques."
-          )
+          class = "plan-card"
         ),
         
+        # Carte 2 : Structure
         
-        # ---- Carte 2 : Analyse ----
-        
-        tags$a(
-          class = "plan-card",
-          href = "#shiny-tab-analyse",
-          
-          span(
-            class = "plan-numero",
-            "2"
+        actionButton(
+          inputId = ns("aller_structure"),
+          label = tagList(
+            span(class = "plan-numero", "2"),
+            span(class = "plan-titre", "Structure"),
+            span(
+              class = "plan-description",
+              "Exploration statistique des données, recherche de relations entre ",
+              "les variables et étude de la structure des profils d'anxiété."
+            )
           ),
-          
-          span(
-            class = "plan-titre",
-            "Analyses"
-          ),
-          
-          span(
-            class = "plan-description",
-            "Exploration statistique des données, recherche de relations entre ",
-            "les variables et étude de la structure des deux profils d'anxiété."
-          )
+          class = "plan-card"
         ),
         
+        # Carte 3 : Modélisation
         
-        # ---- Carte 3 : Modélisation ----
-        
-        tags$a(
-          class = "plan-card",
-          href = "#shiny-tab-modele",
-          
-          span(
-            class = "plan-numero",
-            "3"
+        actionButton(
+          inputId = ns("aller_modele"),
+          label = tagList(
+            span(class = "plan-numero", "3"),
+            span(class = "plan-titre", "Modélisation"),
+            span(
+              class = "plan-description",
+              "Présentation du modèle de régression, des variables utilisées et ",
+              "de leur interprétation. Cette partie permet également d'obtenir ",
+              "une estimation du niveau d'anxiété selon le modèle."
+            )
           ),
-          
-          span(
-            class = "plan-titre",
-            "Modélisation"
-          ),
-          
-          span(
-            class = "plan-description",
-            "Présentation du modèle de régression, des variables utilisées et ",
-            "de leur interprétation. Cette partie permet également d'obtenir ",
-            "une estimation du niveau d'anxiété selon le modèle."
-          )
+          class = "plan-card"
         )
       ),
-      
       
       # ----------------------------------------------------------
       # Avertissement
@@ -455,19 +417,42 @@ page_accueil_ui <- function(id) {
         "et ne constitue pas un diagnostic médical. Elle doit être interprétée ",
         "comme un résultat statistique exploratoire."
       )
-      
     )
   )
 }
 
 
-
-
+# ==============================================================
+# SERVER
+# ==============================================================
 page_accueil_server <- function(id) {
   
   moduleServer(id, function(input, output, session) {
     
-
+    navigation <- reactiveVal(NULL)
+    
+    observeEvent(input$aller_donnees, {
+      navigation(list(
+        destination = "donnees",
+        evenement = input$aller_donnees
+      ))
+    }, ignoreInit = TRUE)
+    
+    observeEvent(input$aller_structure, {
+      navigation(list(
+        destination = "structure",
+        evenement = input$aller_structure
+      ))
+    }, ignoreInit = TRUE)
+    
+    observeEvent(input$aller_modele, {
+      navigation(list(
+        destination = "modele",
+        evenement = input$aller_modele
+      ))
+    }, ignoreInit = TRUE)
+    
+    navigation
     
   })
 }
