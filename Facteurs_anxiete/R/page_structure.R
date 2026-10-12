@@ -545,8 +545,7 @@ page_structure_server <- function(id, donnees) {
       ) +
         geom_boxplot(
           aes(fill = Profession),
-          color = "#B34CF3",
-          outlier.shape = NA
+          color = "#B34CF3"
         ) +
         ggplot2::scale_fill_manual(
           values = couleurs_professions,
