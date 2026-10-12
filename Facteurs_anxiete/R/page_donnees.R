@@ -213,7 +213,7 @@ page_donnees_ui <- function(id) {
             
             plotlyOutput(
               ns("resume_sexe"),
-              height = "350px"
+              height = "400px"
             )
           )
         ),
